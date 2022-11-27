@@ -3,29 +3,30 @@
 #include <string.h>
 #include "athlete.h"
 
-tabCat_t initTabCat() {
-    tabCat_t tab;
-    tab.dimVett = 1;
-    tab.nCat = 0;
-    
-    return tab;
+void initTabCat(tabCat_t *tab) {
+    tab->dimVett = 1;
+    tab->nCat = 0;
+    tab->log = calloc(tab->dimVett, sizeof(category_t));
+    //TODO: check if calloc returns error, return error in that case?
 }
 
-int findCategory(char category, tabCat_t tab) {
+int findCategory(char* category, tabCat_t *tab) {
     int i;
 
-    for (i=0; i<tab.nCat; i++) {
-        if (!strcmp(category, tab.log[i].name))
+    for (i=0; i<tab->nCat; i++) {
+        if (!strcmp(category, tab->log[i].name))
             return i;
     }
 
     return -1;
 }
 
-int addCategory(char category, tabCat_t *tab) {
-    tab->dimVett = tab->dimVett*2;
-    tab->log = calloc(tab->dimVett, sizeof(tabCat_t));
-    tab->nCat++;
+int addCategory(char* category, tabCat_t *tab) {
+    if (tab->dimVett == tab->nCat) {
+        tab->dimVett = tab->dimVett * 2;
+        tab->log = realloc(tab->log, sizeof(category_t)*tab->dimVett);
+    }
+
     strcpy(tab->log[tab->nCat].name, category);
 
     return tab->nCat;
@@ -43,34 +44,41 @@ tabAthl_t readTab(FILE *fp) {
     }
 
     fscanf(fp, "%d", &tabAthl.nAthl);
-    tabAthl.log = calloc(tabAthl.nAthl, sizeof(athlete_t*));
-    tabAthl.sortCode = calloc(tabAthl.nAthl, sizeof(athlete_t*));
-    tabAthl.sortSurn = calloc(tabAthl.nAthl, sizeof(athlete_t*));
-    tabAthl.sortDate = calloc(tabAthl.nAthl, sizeof(athlete_t*));
+    tabAthl.log = calloc(tabAthl.nAthl, sizeof(athlete_t));
+    tabAthl.sortCode = calloc(tabAthl.nAthl, sizeof(athlete_t));
+    tabAthl.sortSurn = calloc(tabAthl.nAthl, sizeof(athlete_t));
+    tabAthl.sortDate = calloc(tabAthl.nAthl, sizeof(athlete_t));
 
-    tabCat = initTabCat();
+    initTabCat(&tabCat);
 
     for (i=0; i<tabAthl.nAthl; i++) {
         fscanf(fp, "%s %s %s %s %d %d/%d/%d", tabAthl.log[i].code, tabAthl.log[i].name, tabAthl.log[i].surname, 
-        category, tabAthl.log[i].hours, tabAthl.log[i].birthday.dd, tabAthl.log[i].birthday.mm, tabAthl.log[i].birthday.yyyy);
-        indexCategory = findCategory(category, tabCat);
-        if (indexCategory == -1)
+        category, &tabAthl.log[i].hours, &tabAthl.log[i].birthday.dd, &tabAthl.log[i].birthday.mm, &tabAthl.log[i].birthday.yyyy);
+
+        indexCategory = findCategory(category, &tabCat);
+        if (indexCategory == -1) {
             indexCategory = addCategory(category, &tabCat);
+            tabCat.nCat++;
+        }
         tabAthl.log[i].category = indexCategory;
     }
 
     tabAthl.tabCat = tabCat;
-    tabAthl.sortCode = tabAthl.sortDate = tabAthl.sortSurn = tabAthl.log;
+
+    for (i=0; i<tabAthl.nAthl; i++) {
+        tabAthl.sortCode[i] = tabAthl.log[i];
+        tabAthl.sortDate[i] = tabAthl.log[i];
+        tabAthl.sortSurn[i] = tabAthl.log[i];
+    }
 
     insertionSort(tabAthl.sortCode, tabAthl.nAthl, s_code);
     insertionSort(tabAthl.sortSurn, tabAthl.nAthl, s_surname);
     insertionSort(tabAthl.sortDate, tabAthl.nAthl, s_birthday);
 
-    fclose(fp);
     return tabAthl;
 }
 
-char getCategory(int index, tabCat_t tab) {
+char* getCategory(int index, tabCat_t tab) {
     return tab.log[index].name;
 }
 
@@ -88,7 +96,7 @@ void printByCategory (tabAthl_t tab) {
     int i, k;
 
     for (i=0; i<tab.tabCat.nCat; i++) {
-        printf("Categoria: %s", getCategory(i, tab.tabCat));
+        printf("Categoria: %s\n", getCategory(i, tab.tabCat));
         for (k=0; k<tab.nAthl; k++) {
             if (i == tab.log[k].category)
                 printOnScreen(tab.log[k], tab.tabCat);
@@ -115,7 +123,6 @@ int athletecmp(athlete_t ath1, athlete_t ath2, sort_e sort) {
     switch (sort) {
         case s_code:
             return strcmp(ath1.code, ath2.code);
-        break;
         case s_surname:
             {
                 int index = strcmp(ath1.surname, ath2.surname);
@@ -124,10 +131,8 @@ int athletecmp(athlete_t ath1, athlete_t ath2, sort_e sort) {
                 else
                     return strcmp(ath1.name, ath2.name);
             }
-        break;
         case s_birthday:
             return datecmp(ath1.birthday, ath2.birthday);
-        break;
     }
 }
 
@@ -144,4 +149,8 @@ void insertionSort(athlete_t *v, int N, sort_e sort) {
         }
         v[j+1] = item;
     }
+}
+
+void Search() {
+
 }
