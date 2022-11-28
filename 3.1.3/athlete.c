@@ -120,17 +120,16 @@ int datecmp(datet_t date1, datet_t date2) {
 }
 
 int athletecmp(athlete_t ath1, athlete_t ath2, sort_e sort) {
+    int index;
     switch (sort) {
         case s_code:
             return strcmp(ath1.code, ath2.code);
         case s_surname:
-            {
-                int index = strcmp(ath1.surname, ath2.surname);
+                index = strcmp(ath1.surname, ath2.surname);
                 if (index != 0)
                     return index;
                 else
                     return strcmp(ath1.name, ath2.name);
-            }
         case s_birthday:
             return datecmp(ath1.birthday, ath2.birthday);
     }
@@ -151,6 +150,42 @@ void insertionSort(athlete_t *v, int N, sort_e sort) {
     }
 }
 
-void Search() {
+void DichotomicSearch(athlete_t *v, char* item, int l, int r, search_e cmd, tabCat_t tab) {
+    int m = (l+r)/2;
+    int n = strlen(item);
+    if (cmd == search_code) {
+        if (strcmp(v[m].code, item) == 0 || l >=r) {
+            printOnScreen(v[m], tab);
+            return;
+        }
+        if (strcmp(v[m].code, item)<0)
+            DichotomicSearch(v, item, l, m, cmd, tab);
+        else
+            DichotomicSearch(v, item, m+1, r, cmd, tab);
+    }
+    if (cmd == search_surn) {
+        if (strncmp(v[m].surname, item, n) == 0 || l >= r) {
+            printOnScreen(v[m], tab);
+            return;
+        }
+        if (strncmp(v[m].surname, item, n)<0)
+            DichotomicSearch(v, item, l, m, cmd, tab);
+        else
+            DichotomicSearch(v, item, m+1, r, cmd, tab);
+    }
+}
 
+void Search(tabAthl_t tab, char* item, int l, int r, search_e cmd) {
+    if (cmd == search_code)
+        DichotomicSearch(tab.sortCode, item, l, r, cmd, tab.tabCat);
+    if (cmd == search_surn)
+        DichotomicSearch(tab.sortSurn, item, l, r, cmd, tab.tabCat);
+}
+
+void freeTab(tabAthl_t tab) {
+    free(tab.tabCat.log);
+    free(tab.log);
+    free(tab.sortCode);
+    free(tab.sortSurn);
+    free(tab.sortDate);
 }
