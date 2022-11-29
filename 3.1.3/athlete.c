@@ -11,7 +11,7 @@ tabCat_t initTabCat() {
     return tab;
 }
 
-int findCategory(char category, tabCat_t tab) {
+int findCategory(char* category, tabCat_t tab) {
     int i;
 
     for (i=0; i<tab.nCat; i++) {
@@ -22,7 +22,7 @@ int findCategory(char category, tabCat_t tab) {
     return -1;
 }
 
-int addCategory(char category, tabCat_t *tab) {
+int addCategory(char* category, tabCat_t *tab) {
     tab->dimVett = tab->dimVett*2;
     tab->log = calloc(tab->dimVett, sizeof(tabCat_t));
     tab->nCat++;
@@ -70,7 +70,7 @@ tabAthl_t readTab(FILE *fp) {
     return tabAthl;
 }
 
-char getCategory(int index, tabCat_t tab) {
+char* getCategory(int index, tabCat_t tab) {
     return tab.log[index].name;
 }
 
@@ -95,7 +95,6 @@ void printByCategory (tabAthl_t tab) {
         }
     }
 }
-
 
 int dateInt(datet_t d) {
     return d.yyyy*1000+d.mm*100+d.dd;

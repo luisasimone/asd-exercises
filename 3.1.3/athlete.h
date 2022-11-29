@@ -39,10 +39,10 @@ typedef struct tabAthl_s {
 } tabAthl_t;
 
 tabAthl_t readTab(FILE *fp);
-int findCategory(char category, tabCat_t tab);
-int addCategory(char category, tabCat_t *tab);
+int findCategory(char* category, tabCat_t tab);
+int addCategory(char* category, tabCat_t *tab);
 void printOnFile(FILE *fp, athlete_t athlete, tabCat_t tab);
-char getCategory(int index, tabCat_t tab);
+char* getCategory(int index, tabCat_t tab);
 void printOnScreen (athlete_t athlete, tabCat_t tab);
 void printByCategory (tabAthl_t tab);
 void sort(tabAthl_t tab, sort_e cmd);
