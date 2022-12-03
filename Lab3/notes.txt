@@ -1,4 +1,0 @@
-apre due sottoproblemi di dimensione n/2
-quindi 2T(n/2) + il fattore di ricombinazione O(n)
-il caso peggiore è che io debba confrontare tutti gli elementi possibili con tutti gli elementi possibili -> è la stessa equazione del merge sort, quindi O(nlgn)
-non è lo split del problema che costa ma la passata lineare
