@@ -20,3 +20,4 @@ void readInv(char *filename, tabInv_t *tab) {
 
     fclose(fp);
 }
+

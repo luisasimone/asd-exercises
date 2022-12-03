@@ -20,6 +20,7 @@ typedef struct pg_s {
     char class[MAX_STR];
     stats_t stats;
     obj_t* obj[8];
+    int nObj;
 } pg_t;
 
 typedef struct node_s *node_ptr;
@@ -41,5 +42,7 @@ list_ptr initList();
 node_ptr newNode(pg_t pg, node_ptr next);
 void readList(char *filename, list_ptr list);
 void addPg(list_ptr list, pg_t pg);
-
+void removePg(list_ptr list, node_ptr node);
+void removeObj(node_ptr pg, obj_t *obj);
+void printStats(pg_t pg);
 #endif //LAB6_PG_H
